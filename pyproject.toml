@@ -1,0 +1,9 @@
+[project]
+name = "fasthtml-test-toaster"
+version = "0.1.0"
+description = "Test FastHTMl toaster"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "python-fasthtml>=0.12.19",
+]
