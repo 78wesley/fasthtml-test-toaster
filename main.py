@@ -25,10 +25,10 @@ def mk_input():
 
 @app.route("/toast")
 def test_toast(sess):
-    add_toast(sess, "This is a toast message from a button click.", "info", dismiss=True)
-    add_toast(sess, "This is a toast message from a button click.", "success", dismiss=True)
-    add_toast(sess, "This is a toast message from a button click.", "warning", dismiss=True)
-    add_toast(sess, "This is a toast message from a button click.", "error", dismiss=True)
+    add_toast(sess, "This is a toast message from a HTMX button click.", "info", dismiss=True)
+    add_toast(sess, "This is a toast message from a HTMX button click.", "success", dismiss=True)
+    add_toast(sess, "This is a toast message from a HTMX button click.", "warning", dismiss=True)
+    add_toast(sess, "This is a toast message from a HTMX button click.", "error", dismiss=True)
     print(sess)
 
 
@@ -38,6 +38,9 @@ def index(sess):
     return (
         Div(
             Button("Send Toast", hx_get="/toast", hx_swap="none"),
+            A("Go to Second Page", href="/second", type="button"),
+            A("Redirect", href="/redirect", type="button"),
+            A("RedirectResponse", href="/redirectresponse", type="button"),
             P(),
             Form(mk_input(), ws_send=True),  # reset input field
             H5("Messages:"),
@@ -46,6 +49,31 @@ def index(sess):
             ws_connect="ws",
         ),
     )
+
+
+@app.route("/second")
+def page_second(sess):
+    add_toast(sess, "Welcome to the second page!", typ="info", dismiss=True)
+    return Div(
+        H1("Second Page"),
+        P("This is the second page."),
+        P("When this page got loaded you should see the toast message \"Welcome to the second page!\"."),
+        P("When you got Redirect to this page you should see the toast message \"Toast from Redirect(\"/second\")\"."),
+        P("When you got RedirectResponse to this page you should see the toast message \"Toast from RedirectResponse(\"/second\")\"."),
+        A("Go back to Home", href="/"),
+    )
+
+
+@app.route("/redirect")
+def redirect(sess):
+    add_toast(sess, "Toast from Redirect(\"/second\")", typ="warning", dismiss=True)
+    return Redirect("/second")
+
+
+@app.route("/redirectresponse")
+def redirectresponse(sess):
+    add_toast(sess, "Toast from RedirectResponse(\"/second\")", typ="warning", dismiss=True)
+    return RedirectResponse("/second")
 
 
 def on_connect(ws, send):
@@ -61,7 +89,7 @@ async def ws(msg: str, send, sess):
     if not msg:
         return
     await send(mk_input())  # reset the input field immediately
-    await send(add_toast(sess, f"This is a toast message from a websocket. Msg: {msg}", typ="info"))
+    await send(add_toast(sess, f"This is a toast message from a websocket. Msg: {msg}", typ="info", dismiss=True))
     await send(render_toasts(sess))
     messages.appendleft(msg)  # New messages first
     for user in users.values():  # Get `send` function for a user
