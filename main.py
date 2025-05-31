@@ -33,7 +33,8 @@ def test_toast(sess):
 
 
 @app.route("/")
-def index(sess):
+def index(req: Request, sess):
+    ws_not_possible = "Websockets doesnt work ❌" if "vercel.app" in req.headers.get(":authority", "") else "Websockets ✅"
     add_toast(sess, "This is a toast message on page load.", typ="info", dismiss=True)
     return (
         Div(
@@ -41,7 +42,7 @@ def index(sess):
             A("Go to Second Page", href="/second", type="button"),
             A("Redirect", href="/redirect", type="button"),
             A("RedirectResponse", href="/redirectresponse", type="button"),
-            P(),
+            P(ws_not_possible),
             Form(mk_input(), ws_send=True),  # reset input field
             H5("Messages:"),
             Div(render_messages(messages), id="msg-list"),
@@ -57,22 +58,22 @@ def page_second(sess):
     return Div(
         H1("Second Page"),
         P("This is the second page."),
-        P("When this page got loaded you should see the toast message \"Welcome to the second page!\"."),
-        P("When you got Redirect to this page you should see the toast message \"Toast from Redirect(\"/second\")\"."),
-        P("When you got RedirectResponse to this page you should see the toast message \"Toast from RedirectResponse(\"/second\")\"."),
+        P('When this page got loaded you should see the toast message "Welcome to the second page!".'),
+        P('When you got Redirect to this page you should see the toast message "Toast from Redirect("/second")".'),
+        P('When you got RedirectResponse to this page you should see the toast message "Toast from RedirectResponse("/second")".'),
         A("Go back to Home", href="/"),
     )
 
 
 @app.route("/redirect")
 def redirect(sess):
-    add_toast(sess, "Toast from Redirect(\"/second\")", typ="warning", dismiss=True)
+    add_toast(sess, 'Toast from Redirect("/second")', typ="warning", dismiss=True)
     return Redirect("/second")
 
 
 @app.route("/redirectresponse")
 def redirectresponse(sess):
-    add_toast(sess, "Toast from RedirectResponse(\"/second\")", typ="warning", dismiss=True)
+    add_toast(sess, 'Toast from RedirectResponse("/second")', typ="warning", dismiss=True)
     return RedirectResponse("/second")
 
 
