@@ -34,7 +34,7 @@ def test_toast(sess):
 
 @app.route("/")
 def index(req: Request, sess):
-    ws_not_possible = "Websockets doesnt work ❌" if "vercel.com" in req.headers.get("referer", "") else "Websockets ✅"
+    ws_not_possible = "Websockets doesnt work ❌" if "fasthtml-test-toaster.vercel.app" in req.headers.get(":authority", "") else "Websockets ✅"
     add_toast(sess, "This is a toast message on page load.", typ="info", dismiss=True)
     return (
         Div(
