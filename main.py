@@ -1,6 +1,6 @@
 from fasthtml.common import *
 from collections import deque
-
+from fasthtml import __version__
 
 picocss = "https://cdn.jsdelivr.net/npm/@picocss/pico@latest/css/pico.min.css"
 picolink = (Link(rel="stylesheet", href=picocss), Style(":root { --pico-font-size: 100%; }"))
@@ -33,16 +33,28 @@ def test_toast(sess):
 
 
 @app.route("/")
-def index(req: Request, sess):
-    ws_not_possible = "Websockets doesnt work ❌" if "fasthtml-test-toaster.vercel.app" in req.headers.get(":authority", "") else "Websockets ✅"
+def index(req, sess):
     add_toast(sess, "This is a toast message on page load.", typ="info", dismiss=True)
     return (
         Div(
-            Button("Send Toast", hx_get="/toast", hx_swap="none"),
-            A("Go to Second Page", href="/second", type="button"),
-            A("Redirect", href="/redirect", type="button"),
-            A("RedirectResponse", href="/redirectresponse", type="button"),
-            P(ws_not_possible),
+            Hgroup(
+                H1("Welcome to the FastHTML Toaster Test!"),
+                P("Toast messages should be floating at the top of the page."),
+            ),
+            Div(
+                P("python-fasthtml version: " + __version__, style="margin:0;"),
+                P("Websockets supported? " + ("❌" if req.get("scheme", "") == "https" else "✅"), style="margin:0;"),
+                A("Github", href="https://github.com/78wesley/fasthtml-test-toaster", target="_blank"),
+                style="margin-bottom: 1rem;",
+            ),
+            Div(
+                A("Send Toast", hx_get="/toast", hx_swap="none", type="button"),
+                A("Go to Second Page", href="/second", type="button"),
+                A("Redirect", href="/redirect", type="button"),
+                A("RedirectResponse", href="/redirectresponse", type="button"),
+                A("Change Button", hx_get="/swapbutton", type="button", id="change-button", hx_swap="outerHTML", hx_target="#change-button", hx_trigger="click"),
+                cls="grid",
+            ),
             Form(mk_input(), ws_send=True),  # reset input field
             H5("Messages:"),
             Div(render_messages(messages), id="msg-list"),
@@ -56,13 +68,27 @@ def index(req: Request, sess):
 def page_second(sess):
     add_toast(sess, "Welcome to the second page!", typ="info", dismiss=True)
     return Div(
-        H1("Second Page"),
+        Hgroup(
+            H1("Second Page"),
+            P("Toast messages should be floating at the top of the page."),
+        ),
         P("This is the second page."),
         P('When this page got loaded you should see the toast message "Welcome to the second page!".'),
         P('When you got Redirect to this page you should see the toast message "Toast from Redirect("/second")".'),
         P('When you got RedirectResponse to this page you should see the toast message "Toast from RedirectResponse("/second")".'),
-        A("Go back to Home", href="/"),
+        A("Go back to Home", href="/", type="button"),
     )
+
+
+@app.route("/swapbutton")
+def change_button(sess):
+    add_toast(sess, "This is a toast message from a button click. with data in the request", typ="info", dismiss=True)
+    return A("Change Button", cls="secondary", hx_get="/swapbutton2", type="button", id="change-button", hx_swap="outerHTML", hx_target="#change-button", hx_trigger="click")
+
+@app.route("/swapbutton2")
+def change_button(sess):
+    add_toast(sess, "This is a toast message from a button click. with data in the request", typ="info", dismiss=True)
+    return A("Change Button", cls="primary", hx_get="/swapbutton", type="button", id="change-button", hx_swap="outerHTML", hx_target="#change-button", hx_trigger="click")
 
 
 @app.route("/redirect")
