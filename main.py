@@ -1,6 +1,8 @@
 from fasthtml.common import *
 from collections import deque
-from fasthtml import __version__
+from fasthtml import __version__ as fasthtml__version
+from fastlite import __version__ as fastlite_version
+from fastcore import __version__ as fastcore_version
 
 picocss = "https://cdn.jsdelivr.net/npm/@picocss/pico@latest/css/pico.min.css"
 picolink = (Link(rel="stylesheet", href=picocss), Style(":root { --pico-font-size: 100%; }"))
@@ -42,7 +44,9 @@ def index(req, sess):
                 P("Toast messages should be floating at the top of the page."),
             ),
             Div(
-                P("python-fasthtml version: " + __version__, style="margin:0;"),
+                P("fasthtml version: " + fasthtml__version, style="margin:0;"),
+                P("fastlite version: " + fastlite_version, style="margin:0;"),
+                P("fastcore version: " + fastcore_version, style="margin:0;"),
                 P("Websockets supported? " + ("❌" if req.get("scheme", "") == "https" else "✅"), style="margin:0;"),
                 A("Github", href="https://github.com/78wesley/fasthtml-test-toaster", target="_blank"),
                 style="margin-bottom: 1rem;",
