@@ -31,7 +31,6 @@ def test_toast(sess):
     add_toast(sess, "This is a toast message from a HTMX button click.", "success", dismiss=True)
     add_toast(sess, "This is a toast message from a HTMX button click.", "warning", dismiss=True)
     add_toast(sess, "This is a toast message from a HTMX button click.", "error", dismiss=True)
-    print(sess)
 
 
 @app.route("/")

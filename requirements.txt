@@ -52,7 +52,7 @@ python-dateutil==2.9.0.post0
     # via python-fasthtml
 python-dotenv==1.1.0
     # via uvicorn
-python-fasthtml==0.12.22
+python-fasthtml==0.12.28
     # via fasthtml-test-toaster
 python-multipart==0.0.20
     # via python-fasthtml
