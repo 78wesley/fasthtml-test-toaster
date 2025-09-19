@@ -2,11 +2,15 @@
 
 Testing scenarios:
 
+- Toast Only
 - Page load
-- HTMX request
-- Websocket
 - Redirect
 - RedirectReponse
+- HTMX request
+    - Ft
+    - FtResponse
+    - Tuple
+- Websocket
 
 
 ## To create requirements.txt run
